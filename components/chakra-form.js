@@ -10,10 +10,8 @@ import {
     Divider,
     Spinner,
     Container,
-    HStack,
     Flex,
-    Center,
-    Square
+    Center
 } from '@chakra-ui/react'
 import { useState } from 'react';
 
