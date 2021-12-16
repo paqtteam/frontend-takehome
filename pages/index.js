@@ -11,39 +11,41 @@ import {
 } from "@chakra-ui/icons";
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import ChakraHeading from '../components/chakra-heading'; 
+import ChakraHeading from '../components/chakra-heading';
 import Layout from '../layouts/default-layout';
 import styles from './editor.module.css'
+import ChakraForm from '../components/chakra-form'
 
 export default function Home() {
 
   const editor = useEditor({
     editorProps: {
-        attributes: {
-            class: styles.editor,
-        },
+      attributes: {
+        class: styles.editor,
+      },
     },
     extensions: [
       StarterKit,
       ChakraHeading,
+      ChakraForm
     ],
     content: '<chakra-heading><p>Hello World!</p></chakra-heading> <p>Helloooooo World!</p>',
   })
 
   const newNodeButton = (text, onClick) => {
     return (
-      <Box 
-        bg="#FAFAFA" 
-        width="90%" 
-        borderWidth="1px" 
-        borderRadius="lg" 
+      <Box
+        bg="#FAFAFA"
+        width="90%"
+        borderWidth="1px"
+        borderRadius="lg"
         overflow="hidden"
-        padding="1em" 
-        margin="2em" 
+        padding="1em"
+        margin="2em"
         cursor="pointer"
         onClick={onClick}>
         <HStack padding="0 0.5em">
-          <AddIcon/>
+          <AddIcon />
           <Text fontSize="lg" padding="0 0.5em">{text}</Text>
         </HStack>
       </Box>
@@ -70,12 +72,14 @@ export default function Home() {
   };
 
   const clickedAddSignature = () => {
-    alert('please implement me');
+    editor.commands.insertContent({
+      type: 'ChakraForm'
+    })
   };
 
   return (
     <Layout>
-      <Flex w="100%" h="100%"> 
+      <Flex w="100%" h="100%">
         <Box
           h="100%"
           w="100%"
@@ -86,7 +90,7 @@ export default function Home() {
             maxW="850"
             minH="1100"
             bg="white"
-            boxShadow= "0px 1px 4px rgba(0, 0, 0, 0.16)"
+            boxShadow="0px 1px 4px rgba(0, 0, 0, 0.16)"
             margin="50px auto"
             padding="4rem"
           >
@@ -98,9 +102,9 @@ export default function Home() {
             <Box>
               <Heading padding="1em" size="md">Components</Heading>
             </Box>
-            {newNodeButton("Paragraph",clickedAddParagraph)}
-            {newNodeButton("Heading",clickedAddHeading)}
-            {newNodeButton("Signature",clickedAddSignature)}
+            {newNodeButton("Paragraph", clickedAddParagraph)}
+            {newNodeButton("Heading", clickedAddHeading)}
+            {newNodeButton("Signature", clickedAddSignature)}
           </VStack>
         </Box>
       </Flex>
