@@ -1,10 +1,22 @@
+import React, { useState, useCallback } from 'react'
 import {
   Box,
   Flex,
   Heading,
   HStack,
   VStack,
-  Text
+  Text,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalCloseButton,
+  ModalBody,
+  Button,
+  FormControl,
+  Input,
+  FormLabel,
 } from "@chakra-ui/react";
 import {
   AddIcon
@@ -12,25 +24,54 @@ import {
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import ChakraHeading from '../components/chakra-heading'; 
+import Signature from '../components/signature';
 import Layout from '../layouts/default-layout';
-import styles from './editor.module.css'
+import './editor.module.css'
+
+const SignatureForm = ({ onChange, value = {} }) => {
+  const handleChange = (e) => {
+    onChange(e.target.name, e.target.value)
+  }
+
+  return (
+    <Box>
+      <FormControl isRequired>
+        <FormLabel htmlFor='name'>Complete Name</FormLabel>
+        <Input id='name' name='name' placeholder='Please Enter Name' value={value.name} onChange={handleChange} isInvalid={!value.name} />
+      </FormControl>
+
+      <FormControl isRequired>
+        <FormLabel htmlFor='title'>Title</FormLabel>
+        <Input id='title' name='title' placeholder='Please Enter Title' value={value.title} onChange={handleChange} isInvalid={!value.title} />
+      </FormControl>
+
+      <FormControl>
+        <FormLabel htmlFor='company'>Company</FormLabel>
+        <Input id='company' name='company' placeholder='Please Enter Company' value={value.company} onChange={handleChange} />
+      </FormControl>
+    </Box>
+  )
+}
 
 export default function Home() {
+  const [openSignatureModal, setOpenSignatureModal] = useState(false)
+  const [signatureValue, setSignatureValue] = useState({})
 
   const editor = useEditor({
     editorProps: {
         attributes: {
-            class: styles.editor,
+            class: 'editor',
         },
     },
     extensions: [
       StarterKit,
       ChakraHeading,
+      Signature,
     ],
     content: '<chakra-heading><p>Hello World!</p></chakra-heading> <p>Helloooooo World!</p>',
   })
 
-  const newNodeButton = (text, onClick) => {
+  const newNodeButton = useCallback((text, onClick) => {
     return (
       <Box 
         bg="#FAFAFA" 
@@ -48,7 +89,7 @@ export default function Home() {
         </HStack>
       </Box>
     )
-  }
+  }, [])
 
   const clickedAddParagraph = () => {
     editor.commands.insertContent('<p>Hello World!</p>')
@@ -70,8 +111,33 @@ export default function Home() {
   };
 
   const clickedAddSignature = () => {
-    alert('please implement me');
+    if (!signatureValue.name || !signatureValue.title) {
+      alert('Name and Title are required!')
+      return
+    }
+    console.log('=== signatureValue ===', signatureValue)
+    editor.commands.insertContent({
+      type: 'SignatureComponent',
+      attrs: {
+        ...signatureValue,
+      }
+    })
+    setOpenSignatureModal(false)
+    setSignatureValue({})
   };
+
+  const handleOpenSignatureModal = () => {
+    setOpenSignatureModal(true)
+  }
+
+  const handleCloseSignatureModal = () => {
+    setOpenSignatureModal(false)
+    setSignatureValue({})
+  }
+
+  const handleChangeSignature = (type, val) => {
+    setSignatureValue({ ...signatureValue, [type]: val })
+  }
 
   return (
     <Layout>
@@ -100,10 +166,29 @@ export default function Home() {
             </Box>
             {newNodeButton("Paragraph",clickedAddParagraph)}
             {newNodeButton("Heading",clickedAddHeading)}
-            {newNodeButton("Signature",clickedAddSignature)}
+            {newNodeButton("Signature",handleOpenSignatureModal)}
           </VStack>
         </Box>
       </Flex>
+
+      <Modal isOpen={openSignatureModal} onClose={handleCloseSignatureModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Add A Signature</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <SignatureForm onChange={handleChangeSignature} value={signatureValue} />
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme='blue' mr={3} onClick={handleCloseSignatureModal}>
+              Close
+            </Button>
+            <Button variant='ghost' onClick={clickedAddSignature}>
+              Add
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Layout>
   )
 };
