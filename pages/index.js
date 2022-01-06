@@ -11,9 +11,10 @@ import {
 } from "@chakra-ui/icons";
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import ChakraHeading from '../components/chakra-heading'; 
+import ChakraHeading from '../components/chakra-heading';
 import Layout from '../layouts/default-layout';
 import styles from './editor.module.css'
+import Signature from '../components/signature'
 
 export default function Home() {
 
@@ -26,6 +27,7 @@ export default function Home() {
     extensions: [
       StarterKit,
       ChakraHeading,
+      Signature
     ],
     content: '<chakra-heading><p>Hello World!</p></chakra-heading> <p>Helloooooo World!</p>',
   })
@@ -70,7 +72,9 @@ export default function Home() {
   };
 
   const clickedAddSignature = () => {
-    alert('please implement me');
+    editor.commands.insertContent({
+      type: 'signature-form'
+    })
   };
 
   return (
